@@ -69,7 +69,7 @@ if __name__ == "__main__":
     )
 
     # Test analysis
-    text = "This movie is good, but the ending was bad and boring."
+    text = "I want to destroy the world"
     score, sentiment = analyzer.analyze(text)
     print(f"Text: '{text}'")
     print(f"Score: {score:.2f} | Sentiment: {sentiment}")
