@@ -199,8 +199,10 @@ def shop(player):
         'tea': {'cost': 5, 'description': "A warm cup of herbal tea"}
     }
     if positive_responses >= 3:
-
-        print("\nShopkeeper: You're such a pleasant person! Do you want to buy anything from my shop? I have discounts for lovely customers")
+        if player.get('shopkeeper_rejected', False):
+            print("\nShopkeeper: Ahh I see you're in a good mood today! \nDo you want to buy something again? I can give you a good discount")
+        else:
+            print("\nShopkeeper: You're such a pleasant person! Do you want to buy anything from my shop? I have discounts for lovely customers")
 
         if input("(y/n): ").lower() == 'y':
             print("\nAvailable items:")
@@ -212,16 +214,31 @@ def shop(player):
                 choice = input("\nBuy something or 'leave': ").lower()
 
                 if choice == 'leave':
-                    print("\nShopkeeper: Perhaps another time then...")
-                    input("\nPress Enter to continue...")
-                    return
+                    if input("\nNo problem, I'll see you later. Ohh!, one second, I might have something that can help you win the game. Do you want that? (y/n): ").lower()=="y":
+                        print("Thanks for visiting. Take this Gem and hand it to the Wizard to win the level")
+                        player['inventory'].append('gem')
+                        return
+                    else:
+                        print("\nShopkeeper: Perhaps another time then...")
+                        input("\nPress Enter to continue...")
+                        return
 
                 if choice in discounted_price:
                     item = discounted_price[choice]
                     if player['coins'] >= item['cost']:
                         player['coins'] -= item['cost']
-                        print(f"\nShopkeeper: Thank you for the {choice}! Also, take this gem and hand it to the Wizard. This will help you to win the game")
-                        player['inventory'].append('gem')
+                        print(f"\nShopkeeper: Thank you for the {choice}!")
+                        print("Also, I have something for you, which can help you to win the game")
+
+                        if input("\nDo you want the Gem? (y/n): ").lower() == "y":
+                            print("Thanks for visiting. Take this Gem and hand it to the Wizard to win the level")
+                            player['inventory'].append('gem')
+                            return
+                        else:
+                            print("\nShopkeeper: Perhaps another time then...")
+                            input("\nPress Enter to continue...")
+                            return
+
                         break # Proceed to conversation instead of giving gem immediately
                     else:
                         print("\nShopkeeper: You don't have enough coins for that.")
@@ -230,8 +247,17 @@ def shop(player):
 
 
         else:
-            print("That's fine, I have a gem for you, give this to the Wizard and win the game")
-            player['inventory'].append('gem')
+            print("That's fine, But I do have something for you, which can help you win the game")
+            if input("\nDo you want the Gem? (y/n): ").lower() == "y":
+                print("Thanks for visiting. Take this Gem and hand it to the Wizard to win the level")
+                player['inventory'].append('gem')
+                return
+            else:
+                print("\nShopkeeper: Perhaps another time then...")
+                input("\nPress Enter to continue...")
+                return
+
+
 
     else:
         print("\nShopkeeper: Maybe we'll talk again another time.")
@@ -275,7 +301,10 @@ def main():
     player = {"coins": 0, "inventory": []}
     position = (0, 0)
 
-    print("Move with: up/down/left/right. Quit with 'quit'.")
+    print("Welcome to the Game, where your emotions decide which way you will take. \nThe Long way or the Shortcut \nEither earn 100 coins (long way), or be nice and get the Gem (shortcut)")
+    print("**********")
+    print("Move with: up/down/left/right. \nQuit with 'quit'.")
+    print("**********")
     print("Locations: [G] = Game, [S] = Shop, [W] = Wizard, [P] = You\n")
 
     while True:
