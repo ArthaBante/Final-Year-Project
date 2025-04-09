@@ -13,8 +13,7 @@ class CoinGame:
 
     def play(self):
         print(f"\n=== COIN GAME ===")
-        print(
-            f"Choose 1 for 1 coin or 2 to choose randomly from 0, 1, or 2 coins. First to {self.target_coins} wins!\nType exit to leave the game\n")
+        print(f"Choose 1 for 1 coin or 2 to choose randomly from 0, 1, or 2 coins. First to {self.target_coins} wins!\nType exit to leave the game\n")
 
         while self.coins_earned < self.target_coins:
             self.display_status()
