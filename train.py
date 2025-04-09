@@ -1,3 +1,4 @@
+import json
 import re
 import pandas as pd
 import random
@@ -12,7 +13,8 @@ class CoinGame:
 
     def play(self):
         print(f"\n=== COIN GAME ===")
-        print(f"Choose 1 for 1 coin or 2 to choose randomly from 0, 1, or 2 coins. First to {self.target_coins} wins!\nType exit to leave the game\n")
+        print(
+            f"Choose 1 for 1 coin or 2 to choose randomly from 0, 1, or 2 coins. First to {self.target_coins} wins!\nType exit to leave the game\n")
 
         while self.coins_earned < self.target_coins:
             self.display_status()
@@ -24,7 +26,6 @@ class CoinGame:
                 input("\nPress Enter to continue...")
                 return  # Exit the game early
 
-
         self.award_winnings()
 
     def display_status(self):
@@ -32,13 +33,14 @@ class CoinGame:
         print(f"Coins Earned: {self.coins_earned}/{self.target_coins} coins")
 
     def handle_turn(self):
+        global coins_won
         try:
             user_input = input("Enter choice 1 or 2 (or 'exit' to quit): ")
 
             # Check for exit command
             if user_input.lower() == 'exit':
                 print("\nThanks for playing! Come back anytime.")
-                return 'exit' # This will terminate the program
+                return 'exit'  # This will terminate the program
 
             choice = int(user_input)
             if choice not in [1, 2]:
@@ -48,10 +50,9 @@ class CoinGame:
             if choice == 1:
                 coins_won = 1
                 print(f"You earned {coins_won} coin!")
-            elif choice ==2:# choice == 2
+            elif choice == 2:  # choice == 2
                 coins_won = random.randint(0, 2)  # Randomly gives 0, 1, or 2 coins
                 print(f"You rolled: {coins_won} coins!")
-
 
             self.coins_earned += coins_won
         except ValueError:
@@ -122,32 +123,30 @@ analyzer = SentimentAnalyzer(
     modifier_words_path=r"C:\Users\Dell\OneDrive - University of Hertfordshire\Lexicon Based Approach\Afinn.csv"
 )
 
-SHOPKEEPER_QUESTIONS = [
-    "How are you feeling today?",
-    "Are you enjoying your adventure so far?",
-    "What do you think about our little town?",
-    "Do you like shopping here?",
-    "Would you recommend this shop to other adventurers?"
-]
+
+SHOPKEEPER_DATA_PATH = r"C:\Users\Dell\OneDrive - University of Hertfordshire\Lexicon Based Approach\shopkeeper_data.json"
+
+def load_shop_items(filepath):
+    with open(filepath, 'r') as f:
+        return json.load(f)["items"]
+
+def load_shopkeeper_data():
+    with open(SHOPKEEPER_DATA_PATH, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+SHOPKEEPER_DIALOGUE = load_shopkeeper_data()
+shop_items = load_shop_items(r'C:\Users\Dell\OneDrive - University of Hertfordshire\Lexicon Based Approach\shop_items.json')
 
 
 def shop(player):
     print("\n=== FRIENDLY SHOPKEEPER ===")
 
-    # Check if this is a repeat visit where player was previously rejected
     if player.get('shopkeeper_rejected', False):
-        print("Shopkeeper: Ah, you're back! I remember our last conversation...")
-        print("Shopkeeper: Maybe you'd like to buy something first this time?")
-        print("Shopkeeper: Then we can chat again properly.")
+        for line in SHOPKEEPER_DIALOGUE["revisit_dialogue"]:
+            print(f"Shopkeeper: {line}")
 
-        # Simple shop implementation for rejected players
-
-
-        shop_items = {
-            'flower': {'cost': 15, 'description': "A beautiful flower to show good will"},
-            'tea': {'cost': 10, 'description': "A warm cup of herbal tea"}
-        }
-
+        # Simple shop for returning players
         print("\nAvailable items:")
         for item, data in shop_items.items():
             print(f"{item.title():<8} - {data['cost']} coins\t{data['description']}")
@@ -157,7 +156,7 @@ def shop(player):
             choice = input("\nBuy something or 'leave': ").lower()
 
             if choice == 'leave':
-                print("\nShopkeeper: Perhaps another time then...")
+                print(f"\nShopkeeper: {SHOPKEEPER_DIALOGUE['shopkeeper_end']['no_gift']}")
                 input("\nPress Enter to continue...")
                 return
 
@@ -166,20 +165,19 @@ def shop(player):
                 if player['coins'] >= item['cost']:
                     player['coins'] -= item['cost']
                     print(f"\nShopkeeper: Thank you for the {choice}! Now, let's chat properly.")
-                    break  # Proceed to conversation instead of giving gem immediately
+                    break
                 else:
                     print("\nShopkeeper: You don't have enough coins for that.")
             else:
                 print("\nShopkeeper: I don't have that item.")
 
-    # Conversation happens for both first-time visitors and returning rejected players
-    print("\nShopkeeper: Let's have a proper conversation now.")
-    print("Shopkeeper: I might have a special gift if we get along well!\n")
+    # Conversation section
+    for line in SHOPKEEPER_DIALOGUE["conversation_intro"]:
+        print(f"Shopkeeper: {line.format(name=player['name'])}")
 
     positive_responses = 0
-
-    for i, question in enumerate(SHOPKEEPER_QUESTIONS, 1):
-        print(f"\nShopkeeper ({i}/5): {question}")
+    for i, question in enumerate(SHOPKEEPER_DIALOGUE['questions'], 1):
+        print(f"\nShopkeeper ({i}/5): {question.format(name=player['name'])}")
         response = input("Your response: ")
         score, sentiment = analyzer.analyze(response)
 
@@ -193,16 +191,18 @@ def shop(player):
         else:
             print("Shopkeeper: I see...")
 
-    # Determine if player gets the gem
+    # Discounted item logic
     discounted_price = {
-        'flower': {'cost': 7, 'description': "A beautiful flower to show good will"},
-        'tea': {'cost': 5, 'description': "A warm cup of herbal tea"}
+        item: {
+            'cost': data['cost'] // 2,
+            'description': data['description']
+        }
+        for item, data in shop_items.items()
     }
+
     if positive_responses >= 3:
-        if player.get('shopkeeper_rejected', False):
-            print("\nShopkeeper: Ahh I see you're in a good mood today! \nDo you want to buy something again? I can give you a good discount")
-        else:
-            print("\nShopkeeper: You're such a pleasant person! Do you want to buy anything from my shop? I have discounts for lovely customers")
+        mood = 'returning' if player.get('shopkeeper_rejected', False) else 'new'
+        print(f"\nShopkeeper: {SHOPKEEPER_DIALOGUE['discount_offer'][mood].format(name=player['name'])}")
 
         if input("(y/n): ").lower() == 'y':
             print("\nAvailable items:")
@@ -214,14 +214,13 @@ def shop(player):
                 choice = input("\nBuy something or 'leave': ").lower()
 
                 if choice == 'leave':
-                    if input("\nNo problem, I'll see you later. Ohh!, one second, I might have something that can help you win the game. Do you want that? (y/n): ").lower()=="y":
-                        print("Thanks for visiting. Take this Gem and hand it to the Wizard to win the level")
+                    if input(f"\n{SHOPKEEPER_DIALOGUE['gift_offer' ]['ask'].format(name=player['name'])} (y/n): ").lower() == "y":
+                        print(SHOPKEEPER_DIALOGUE["gift_offer"]["confirm"].format(name=player['name']))
                         player['inventory'].append('gem')
-                        return
                     else:
-                        print("\nShopkeeper: Perhaps another time then...")
-                        input("\nPress Enter to continue...")
-                        return
+                        print(SHOPKEEPER_DIALOGUE["shopkeeper_end"]["no_gift"])
+                    input("\nPress Enter to continue...")
+                    return
 
                 if choice in discounted_price:
                     item = discounted_price[choice]
@@ -231,37 +230,28 @@ def shop(player):
                         print("Also, I have something for you, which can help you to win the game")
 
                         if input("\nDo you want the Gem? (y/n): ").lower() == "y":
-                            print("Thanks for visiting. Take this Gem and hand it to the Wizard to win the level")
+                            print(SHOPKEEPER_DIALOGUE["gift_offer"]["confirm"])
                             player['inventory'].append('gem')
-                            return
                         else:
-                            print("\nShopkeeper: Perhaps another time then...")
-                            input("\nPress Enter to continue...")
-                            return
-
-                        break # Proceed to conversation instead of giving gem immediately
+                            print(SHOPKEEPER_DIALOGUE["shopkeeper_end"]["no_gift"])
+                        input("\nPress Enter to continue...")
+                        return
                     else:
                         print("\nShopkeeper: You don't have enough coins for that.")
                 else:
                     print("\nShopkeeper: I don't have that item.")
-
-
         else:
-            print("That's fine, But I do have something for you, which can help you win the game")
+            print("That's fine. But I do have something for you...")
             if input("\nDo you want the Gem? (y/n): ").lower() == "y":
-                print("Thanks for visiting. Take this Gem and hand it to the Wizard to win the level")
+                print(SHOPKEEPER_DIALOGUE["gift_offer"]["confirm"])
                 player['inventory'].append('gem')
-                return
             else:
-                print("\nShopkeeper: Perhaps another time then...")
-                input("\nPress Enter to continue...")
-                return
-
-
-
+                print(SHOPKEEPER_DIALOGUE["shopkeeper_end"]["no_gift"])
+            input("\nPress Enter to continue...")
+            return
     else:
-        print("\nShopkeeper: Maybe we'll talk again another time.")
-        player['shopkeeper_rejected'] = True  # Remember the rejection
+        print(f"\n{SHOPKEEPER_DIALOGUE['shopkeeper_end']['rejected']}")
+        player['shopkeeper_rejected'] = True
 
 
 def move_player(position, direction):
@@ -298,14 +288,17 @@ def display_grid(position):
 
 
 def main():
-    player = {"coins": 0, "inventory": []}
+    Player_name = input("Enter your name Adventurer: ")
+    player = {"name": Player_name, "coins": 0, "inventory": []}
     position = (0, 0)
 
-    print("Welcome to the Game, where your emotions decide which way you will take. \nThe Long way or the Shortcut \nEither earn 100 coins (long way), or be nice and get the Gem (shortcut)")
+    print(
+        f"Welcome to the Game {Player_name}, where your emotions decide which way you will take. \nThe Long way or the Shortcut \nEither earn 100 coins (long way), or be nice and get the Gem (shortcut)")
     print("**********")
     print("Move with: up/down/left/right. \nQuit with 'quit'.")
     print("**********")
     print("Locations: [G] = Game, [S] = Shop, [W] = Wizard, [P] = You\n")
+
 
     while True:
         display_grid(position)

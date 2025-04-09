@@ -1,0 +1,16 @@
+{
+  "items": {
+    "sword": {
+      "cost": 20,
+      "description": "A magical sword that can slice through anything"
+    },
+    "Health Potion": {
+      "cost": 10,
+      "description": "Will give you enough health to beat the dragon"
+    },
+    "Sheild": {
+      "cost": 15,
+      "description": "This magical shield will protect you from the dragon's attack"
+    }
+  }
+}

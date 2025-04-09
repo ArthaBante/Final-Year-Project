@@ -1,0 +1,32 @@
+{
+  "revisit_dialogue": [
+    "Ah, you're back! I remember our last conversation...",
+    "Maybe you'd like to buy something first this time?",
+    "Then we can chat again properly."
+  ],
+  "questions": [
+    "How are you feeling today {name}?",
+    "Describe what was going into your mind when you first came to this town?",
+    "The challenges will get harder as you move, how are you planning to deal with it?",
+    "What does this adventure mean to you personally?",
+    "What would you say to another traveler who feels like giving up?"
+  ],
+  "conversation_intro": [
+    "Hello there, {name}! Welcome to my shop.",
+    "It's always nice to see new adventurers around.",
+    "Let’s have a little chat, shall we?",
+    "I might have a special gift if we get along well!"
+  ],
+  "discount_offer": {
+    "new": "{name}, you’ve been a wonderful guest! I'd love to offer you a special 50% discount. Would you like to buy anything?",
+    "returning": "Ahh, {name}, you seem much more cheerful today! Do you want to buy something? I can give you a good discount"
+  },
+  "gift_offer": {
+    "ask": "By the way, {name}, would you like a magical gem to help you on your journey?",
+    "confirm": "Here you go, {name}. Take this Gem and hand it to the Wizard to win the level"
+  },
+  "shopkeeper_end": {
+    "no_gift": "Perhaps another time then...",
+    "rejected": "Shopkeeper: Maybe we'll talk again another time."
+  }
+}
