@@ -32,12 +32,10 @@
   "mood_responses": {
     "positive": [
       "That makes me happy!",
-      "Wonderful to hear that!",
-      "Your positivity brightens my day!"
+      "Wonderful to hear that!"
     ],
     "neutral": [
       "I see...",
-      "Interesting perspective.",
       "Thanks for sharing that."
     ],
     "negative": [

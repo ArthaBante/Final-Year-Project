@@ -190,7 +190,7 @@ def shop(player):
         else:
             print(f"\nShopkeeper: {random.choice(SHOPKEEPER_DIALOGUE['mood_responses']['neutral'])}")
 
-    # Discounted item logic
+
     discounted_price = {
         item: {
             'cost': data['cost'] // 2,
