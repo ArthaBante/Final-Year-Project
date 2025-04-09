@@ -28,5 +28,22 @@
   "shopkeeper_end": {
     "no_gift": "Perhaps another time then...",
     "rejected": "Shopkeeper: Maybe we'll talk again another time."
+  },
+  "mood_responses": {
+    "positive": [
+      "That makes me happy!",
+      "Wonderful to hear that!",
+      "Your positivity brightens my day!"
+    ],
+    "neutral": [
+      "I see...",
+      "Interesting perspective.",
+      "Thanks for sharing that."
+    ],
+    "negative": [
+      "Oh, that's unfortunate...",
+      "I'm sorry to hear that.",
+      "That sounds difficult."
+    ]
   }
 }

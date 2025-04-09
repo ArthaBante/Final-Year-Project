@@ -184,11 +184,11 @@ def shop(player):
 
         if sentiment == "positive":
             positive_responses += 1
-            print("Shopkeeper: That makes me happy!")
+            print(f"\nShopkeeper: {random.choice(SHOPKEEPER_DIALOGUE['mood_responses']['positive'])}")
         elif sentiment == "negative":
-            print("Shopkeeper: Oh, that's unfortunate...")
+            print(f"\nShopkeeper: {random.choice(SHOPKEEPER_DIALOGUE['mood_responses']['negative'])}")
         else:
-            print("Shopkeeper: I see...")
+            print(f"\nShopkeeper: {random.choice(SHOPKEEPER_DIALOGUE['mood_responses']['neutral'])}")
 
     # Discounted item logic
     discounted_price = {
