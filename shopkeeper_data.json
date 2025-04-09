@@ -8,7 +8,7 @@
     "How are you feeling today {name}?",
     "Describe what was going into your mind when you first came to this town?",
     "The challenges will get harder as you move, how are you planning to deal with it?",
-    "What does this adventure mean to you personally?",
+    "Do you believe you're the hero this land needs, {name}? Why?",
     "What would you say to another traveler who feels like giving up?"
   ],
   "conversation_intro": [
