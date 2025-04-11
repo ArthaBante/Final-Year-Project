@@ -63,8 +63,7 @@ class CoinGame:
         print(f"\nYou won {self.coins_earned} coins! Total now: {self.player['coins']}")
 
 
-
-class SentimentAnalyzer:
+class SentimentAnalyser:
     def __init__(self, emotion_words_path, modifier_words_path):
         self.lexicon = self.load_data(emotion_words_path)
         self.modifiers, self.negations = self.load_modifier_words(modifier_words_path)
@@ -89,7 +88,7 @@ class SentimentAnalyzer:
         text = text.lower()
         return re.findall(r"\w+(?:'\w+)?", text)
 
-    def analyze(self, text):
+    def analyse(self, text):
         words = self._preprocess(text)
         if not words:
             return 0.0, "neutral"
@@ -116,8 +115,8 @@ class SentimentAnalyzer:
         return score, sentiment
 
 
-# Initialize sentiment analyzer
-analyzer = SentimentAnalyzer(
+# Initialize sentiment analyser
+analyser = SentimentAnalyser(
     emotion_words_path=r"C:\Users\Dell\OneDrive - University of Hertfordshire\Lexicon Based Approach\Bing.csv",
     modifier_words_path=r"C:\Users\Dell\OneDrive - University of Hertfordshire\Lexicon Based Approach\Afinn.csv"
 )
@@ -178,7 +177,7 @@ def shop(player):
     for i, question in enumerate(SHOPKEEPER_DIALOGUE['questions'], 1):
         print(f"\nShopkeeper ({i}/5): {question.format(name=player['name'])}")
         response = input("Your response: ")
-        score, sentiment = analyzer.analyze(response)
+        score, sentiment = analyser.analyse(response)
 
         print(f"[Your response was {sentiment} (score: {score:.2f})]")
 
